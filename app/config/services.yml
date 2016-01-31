@@ -1,0 +1,9 @@
+services:
+    app.cors.event_listener:
+        class: ApiBundle\EventListener\CorsListener
+        arguments: [ '@event_dispatcher' ]
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest', priority: 10000 }
+
+    app.json_response.handler:
+        class: ApiBundle\Handler\JsonResponseHandler
