@@ -196,6 +196,7 @@ class ApiPhotoController extends Controller
 
             return $this->get('app.json_response.handler')->createEntityResponse($photo);
         } catch (\Exception $exception) {
+            $this->get('logger')->error($exception);
             return $this->get('app.json_response.handler')->createErrorResponse('Error update photo');
         }
     }

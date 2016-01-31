@@ -62,7 +62,7 @@ class ApiPhotoControllerTest extends WebTestCase
         $createdName = $object['originalName'];
         $this->assertEquals('photo.jpg', $createdName, 'Unexpected request body for POST /api/photo');
 
-        $payload = json_encode(['tags' => [['name' => 'tag1'], ['name' => 'tag2'], ['name' => 'tag3'], ['name' => 'Test'.$now], ['name' => 'NewTest'.$now]]]);
+        $payload = json_encode(['tags' => ['tag1', 'tag2', 'tag3', 'Test'.$now, 'NewTest'.$now]]);
         $client->request('PUT', '/api/photo/'.$createdId, [], [], ['CONTENT_TYPE' => 'application/json'], $payload);
         $this->assertEquals(200,
             $client->getResponse()->getStatusCode(),
