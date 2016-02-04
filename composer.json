@@ -1,10 +1,11 @@
 {
-    "name": "alexeyvolkov/photos-api",
+    "name": "alexeyvolkov/stfalcon-photos-api",
+    "description": "Stfalcon Test. Photos Api",
     "license": "MIT",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "ApiBundle\\": "src/"
         },
         "classmap": [
             "app/AppKernel.php",

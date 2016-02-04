@@ -15,8 +15,6 @@
 /vendor/
 /web/bundles/
 
-*~
-.DS_Store
 composer.phar
 phpunit.phar
 web/uploads/photos/*

@@ -5,6 +5,7 @@ namespace ApiBundle\Handler;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Mapping\ClassMetadata;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
@@ -31,7 +32,7 @@ class JsonResponseHandler
         $encoder = new JsonEncoder();
         $normalizer = new ObjectNormalizer($classMetadataFactory);
 
-        $normalizer->setCircularReferenceHandler(function ($object) {
+        $normalizer->setCircularReferenceHandler(function (ClassMetadata $object) {
             return $object->getName();
         });
 

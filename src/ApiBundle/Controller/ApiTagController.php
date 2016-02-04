@@ -3,7 +3,6 @@
 namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Tag;
-use ApiBundle\Form\ApiTagType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
