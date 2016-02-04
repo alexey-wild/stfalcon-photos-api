@@ -4,7 +4,7 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Tag;
 use ApiBundle\Entity\Photo;
-use ApiBundle\Form\ApiPhotoType;
+use ApiBundle\Form\Type\ApiPhotoType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -37,8 +37,7 @@ class ApiPhotoController extends Controller
             ->createQueryBuilder('p');
 
         if ($tags) {
-            $queryBuilder
-                ->join('p.tags', 't');
+            $queryBuilder->join('p.tags', 't');
 
             foreach ($tags as $key => $tag) {
                 $queryBuilder
@@ -75,14 +74,11 @@ class ApiPhotoController extends Controller
     public function addAction(Request $request)
     {
         $photo = new Photo();
-
         $form = $this->createForm(ApiPhotoType::class, $photo, ['allow_extra_fields' => true]);
-
         $form->handleRequest($request);
         if ($form->isValid()) {
             /** @var Photo $photo */
             $photo = $form->getData();
-
             $tagsArray = $request->get('tags', []);
 
             /** @var Tag[] $tagsEntities */
@@ -95,7 +91,6 @@ class ApiPhotoController extends Controller
 
             foreach ($tagsEntities as $tagEntity) {
                 $photo->addTag($tagEntity);
-
                 $keyOnArray = array_search($tagEntity->getName(), $tagsArray);
                 unset($tagsArray[$keyOnArray]);
             }
@@ -103,18 +98,14 @@ class ApiPhotoController extends Controller
             foreach ($tagsArray as $tag) {
                 $newTag = new Tag();
                 $newTag->setName($tag);
-
                 $photo->addTag($newTag);
-
                 $this->getDoctrine()->getManager()->persist($newTag);
             }
 
             /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
             $file = $form->get('file')->getData();
-            $fileName = time() . '.' . $file->guessExtension();
-
+            $fileName = time().'.'.$file->guessExtension();
             $file->move($this->getUploadDir(), $fileName);
-
             $photo->setName($fileName);
             $photo->setOriginalName($file->getClientOriginalName());
 
@@ -155,7 +146,7 @@ class ApiPhotoController extends Controller
      * @Method("PUT")
      *
      * @param Request $request
-     * @param Photo     $photo
+     * @param Photo   $photo
      *
      * @return JsonResponse
      */
@@ -163,9 +154,7 @@ class ApiPhotoController extends Controller
     {
         try {
             $photo->getTags()->clear();
-
             $requestContent = json_decode($request->getContent(), true);
-
             $tagsArray = $requestContent['tags'] ?? [];
 
             /** @var Tag[] $tagsEntities */
@@ -178,7 +167,6 @@ class ApiPhotoController extends Controller
 
             foreach ($tagsEntities as $tagEntity) {
                 $photo->addTag($tagEntity);
-
                 $keyOnArray = array_search($tagEntity->getName(), $tagsArray);
                 unset($tagsArray[$keyOnArray]);
             }
@@ -186,9 +174,7 @@ class ApiPhotoController extends Controller
             foreach ($tagsArray as $tag) {
                 $newTag = new Tag();
                 $newTag->setName($tag);
-
                 $photo->addTag($newTag);
-
                 $this->getDoctrine()->getManager()->persist($newTag);
             }
 
@@ -197,6 +183,7 @@ class ApiPhotoController extends Controller
             return $this->get('app.json_response.handler')->createEntityResponse($photo);
         } catch (\Exception $exception) {
             $this->get('logger')->error($exception);
+
             return $this->get('app.json_response.handler')->createErrorResponse('Error update photo');
         }
     }
@@ -222,7 +209,7 @@ class ApiPhotoController extends Controller
             $this->getDoctrine()->getManager()->remove($photo);
             $this->getDoctrine()->getManager()->flush();
 
-            unlink($this->getUploadDir() . '/' . $name);
+            unlink($this->getUploadDir().'/'.$name);
 
             return $this->get('app.json_response.handler')->createSuccessResponse();
         } catch (\Exception $exception) {
@@ -235,6 +222,6 @@ class ApiPhotoController extends Controller
      */
     private function getUploadDir()
     {
-        return $this->container->getParameter('kernel.root_dir') . '/../web/' . Photo::FILE_PHOTO_PATH;
+        return $this->container->getParameter('kernel.root_dir').'/../web/'.Photo::FILE_PHOTO_PATH;
     }
 }
