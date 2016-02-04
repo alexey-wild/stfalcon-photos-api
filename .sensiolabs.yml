@@ -10,7 +10,7 @@ pre_composer_script: |
 post_composer_script: |
     #!/bin/bash
 
-    ./bin/console doctrine:database:create --no-interaction
+    # ./bin/console doctrine:database:create --no-interaction
     ./bin/console doctrine:schema:create --no-interaction
     ./bin/console doctrine:fixtures:load --no-interaction
 
