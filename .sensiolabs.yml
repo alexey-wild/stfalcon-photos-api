@@ -2,6 +2,8 @@ pre_composer_script: |
     #!/bin/bash
 
     cp app/config/parameters.yml.dist app/config/parameters.yml
+    sed -i -e "s/session_name:.*/session_name: PHOTOAPI/" app/config/parameters.yml
+    sed -i -e "s/secret:.*/secret: fgv34g24g4g34g34g34g34g34g4g/" app/config/parameters.yml
     sed -i -e "s/database_host:.*/database_host: sql2.freemysqlhosting.net/" app/config/parameters.yml
     sed -i -e "s/database_name:.*/database_name: sql2105668/" app/config/parameters.yml
     sed -i -e "s/database_user:.*/database_user: sql2105668/" app/config/parameters.yml

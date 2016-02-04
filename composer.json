@@ -5,7 +5,7 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "ApiBundle\\": "src/AlexeyWild/Bundle/ApiBundle/"
         },
         "classmap": [
             "app/AppKernel.php",
