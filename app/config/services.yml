@@ -7,3 +7,11 @@ services:
 
     app.json_response.handler:
         class: ApiBundle\Handler\JsonResponseHandler
+
+    app.photo.manager:
+        class: ApiBundle\Manager\PhotoManager
+        arguments: [ '@doctrine.orm.entity_manager', %kernel.root_dir% ]
+
+    app.tag.manager:
+        class: ApiBundle\Manager\TagManager
+        arguments: [ '@doctrine.orm.entity_manager' ]

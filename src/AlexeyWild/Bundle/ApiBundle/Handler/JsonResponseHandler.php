@@ -43,7 +43,7 @@ class JsonResponseHandler
      * Create JSON response for entities
      *
      * @param object[] $entities
-     * @param int   $total
+     * @param int      $total
      *
      * @return JsonResponse
      */

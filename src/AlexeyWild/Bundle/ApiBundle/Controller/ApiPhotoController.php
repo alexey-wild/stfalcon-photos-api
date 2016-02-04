@@ -28,94 +28,12 @@ class ApiPhotoController extends Controller
      */
     public function listAction(Request $request)
     {
-        $limit = $request->query->getInt('limit', 10);
-        $page = $request->query->getInt('page', 1);
-        $offset = $limit * ($page - 1);
-        $tags = $request->query->get('tags', []);
+        $queryBuilder = $this->get('app.photo.manager')->getPhotosQueryBuilder($request);
+        $entities = $this->get('app.photo.manager')->getPhotos($queryBuilder, $request);
 
-        $queryBuilder = $this->getDoctrine()->getRepository('ApiBundle:Photo')
-            ->createQueryBuilder('p');
-
-        if ($tags) {
-            $queryBuilder->join('p.tags', 't');
-
-            foreach ($tags as $key => $tag) {
-                $queryBuilder
-                    ->orWhere('t.name = :tag'.$key)
-                    ->setParameter('tag'.$key, $tag);
-            }
-        }
-
-        $countQueryBuilder = clone $queryBuilder;
-        $count = $countQueryBuilder
-            ->select('COUNT(p)')
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        $entities = $queryBuilder
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
-            ->getQuery()
-            ->execute();
+        $count = $this->get('app.photo.manager')->getPhotosCount($queryBuilder);
 
         return $this->get('app.json_response.handler')->createEntitiesResponse($entities, $count);
-    }
-
-    /**
-     * Add new Photo entity.
-     *
-     * @Route("/api/photo", name="api_photo_add")
-     * @Method("POST")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function addAction(Request $request)
-    {
-        $photo = new Photo();
-        $form = $this->createForm(ApiPhotoType::class, $photo, ['allow_extra_fields' => true]);
-        $form->handleRequest($request);
-        if ($form->isValid()) {
-            /** @var Photo $photo */
-            $photo = $form->getData();
-            $tagsArray = $request->get('tags', []);
-
-            /** @var Tag[] $tagsEntities */
-            $tagsEntities = $this->getDoctrine()->getRepository('ApiBundle:Tag')
-                ->createQueryBuilder('t')
-                ->where('t.name IN (:tags)')
-                ->setParameter('tags', $tagsArray)
-                ->getQuery()
-                ->execute();
-
-            foreach ($tagsEntities as $tagEntity) {
-                $photo->addTag($tagEntity);
-                $keyOnArray = array_search($tagEntity->getName(), $tagsArray);
-                unset($tagsArray[$keyOnArray]);
-            }
-
-            foreach ($tagsArray as $tag) {
-                $newTag = new Tag();
-                $newTag->setName($tag);
-                $photo->addTag($newTag);
-                $this->getDoctrine()->getManager()->persist($newTag);
-            }
-
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $form->get('file')->getData();
-            $fileName = time().'.'.$file->guessExtension();
-            $file->move($this->getUploadDir(), $fileName);
-            $photo->setName($fileName);
-            $photo->setOriginalName($file->getClientOriginalName());
-
-            $this->getDoctrine()->getManager()->persist($photo);
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->get('app.json_response.handler')->createEntityResponse($photo);
-        }
-
-        return $this->get('app.json_response.handler')->createFormErrorResponse($form);
     }
 
     /**
@@ -137,6 +55,39 @@ class ApiPhotoController extends Controller
     }
 
     /**
+     * Add new Photo entity.
+     *
+     * @Route("/api/photo", name="api_photo_add")
+     * @Method("POST")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function addAction(Request $request)
+    {
+        $photo = new Photo();
+        $form = $this->createForm(ApiPhotoType::class, $photo, ['allow_extra_fields' => true]);
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            /** @var Photo $photo */
+            $photo = $form->getData();
+            $tagsArray = $request->get('tags', []);
+            $this->get('app.tag.manager')->updateTags($photo, $tagsArray);
+
+            $file = $form->get('file')->getData();
+            $this->get('app.photo.manager')->uploadPhoto($file, $photo);
+
+            $this->getDoctrine()->getManager()->persist($photo);
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->get('app.json_response.handler')->createEntityResponse($photo);
+        }
+
+        return $this->get('app.json_response.handler')->createFormErrorResponse($form);
+    }
+
+    /**
      * Edit an existing Photo entity.
      *
      * @Route("/api/photo/{id}",
@@ -155,28 +106,9 @@ class ApiPhotoController extends Controller
         try {
             $photo->getTags()->clear();
             $requestContent = json_decode($request->getContent(), true);
+
             $tagsArray = $requestContent['tags'] ?? [];
-
-            /** @var Tag[] $tagsEntities */
-            $tagsEntities = $this->getDoctrine()->getRepository('ApiBundle:Tag')
-                ->createQueryBuilder('t')
-                ->where('t.name IN (:tags)')
-                ->setParameter('tags', $tagsArray)
-                ->getQuery()
-                ->execute();
-
-            foreach ($tagsEntities as $tagEntity) {
-                $photo->addTag($tagEntity);
-                $keyOnArray = array_search($tagEntity->getName(), $tagsArray);
-                unset($tagsArray[$keyOnArray]);
-            }
-
-            foreach ($tagsArray as $tag) {
-                $newTag = new Tag();
-                $newTag->setName($tag);
-                $photo->addTag($newTag);
-                $this->getDoctrine()->getManager()->persist($newTag);
-            }
+            $this->get('app.tag.manager')->updateTags($photo, $tagsArray);
 
             $this->getDoctrine()->getManager()->flush();
 
