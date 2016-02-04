@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\ApiBundle\DataFixtures\ORM;
+namespace ApiBundle\DataFixtures\ORM;
 
 use ApiBundle\Entity\Tag;
 use Doctrine\Common\DataFixtures\FixtureInterface;

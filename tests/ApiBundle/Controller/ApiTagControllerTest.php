@@ -3,7 +3,7 @@
 namespace Tests\ApiBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Tests\ApiBundle\DataFixtures\ORM\LoadTagData;
+use ApiBundle\DataFixtures\ORM\LoadTagData;
 
 /**
  * {@inheritdoc}
