@@ -1,3 +1,5 @@
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/190f016a-eb4c-4c73-9f45-a9efd8f20c32/big.png)](https://insight.sensiolabs.com/projects/190f016a-eb4c-4c73-9f45-a9efd8f20c32)
+
 Photos Api
 =========
 
