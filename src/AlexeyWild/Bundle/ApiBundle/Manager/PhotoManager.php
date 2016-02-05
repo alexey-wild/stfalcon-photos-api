@@ -29,7 +29,7 @@ class PhotoManager
      * @param EntityManagerInterface $entityManager
      * @param string                 $rootDir
      */
-    public function __construct(EntityManagerInterface $entityManager, $rootDir = __DIR__)
+    public function __construct(EntityManagerInterface $entityManager, $rootDir = '')
     {
         $this->entityManager = $entityManager;
         $this->rootDir = $rootDir;
