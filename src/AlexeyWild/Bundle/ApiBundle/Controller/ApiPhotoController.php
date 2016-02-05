@@ -2,7 +2,6 @@
 
 namespace ApiBundle\Controller;
 
-use ApiBundle\Entity\Tag;
 use ApiBundle\Entity\Photo;
 use ApiBundle\Form\Type\ApiPhotoType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
